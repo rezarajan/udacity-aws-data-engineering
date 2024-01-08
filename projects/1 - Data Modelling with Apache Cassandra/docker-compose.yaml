@@ -1,0 +1,23 @@
+version: '3'
+services:
+    node1:
+        image: cassandra:latest
+        container_name: cassandra_node_1
+        hostname: node1
+        expose:
+            # Intra-node communication
+            - 7000
+            # TLS intra-node communication
+            - 7001
+            # JMX
+            - 7199
+            # CQL
+            - 9042
+            # CQL SSL
+            - 9142
+        ports:
+            - 9042:9042
+        ulimits:
+            memlock: -1
+            nproc: 32768
+            nofile: 100000

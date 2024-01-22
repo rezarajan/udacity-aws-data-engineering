@@ -3,6 +3,7 @@ import configparser
 import logging
 import boto3
 import json
+import time
 
 def main():
     logging.basicConfig(level=logging.INFO)  # Set the logging level
@@ -53,6 +54,8 @@ def main():
         ]
     })
 
+    roleArn = '' # Placeholder for IAM role ARN
+
     try:
         # Attempt to create IAM role
         dwhRole = iam.create_role(
@@ -82,52 +85,68 @@ def main():
             logging.error(f"An error occurred while creating IAM Role '{IAM_ROLE_NAME}': {e}")
 
 
+    try:
+        clusterProps = None
+        if roleArn != '':
+            # Attempt to create Redshift cluster
+            response = redshift.create_cluster(
+                DBName=DB_NAME,
+                ClusterIdentifier=CLUSTER_IDENTIFIER,
+                ClusterType=CLUSTER_TYPE,
+                NodeType=NODE_TYPE,
+                MasterUsername=DB_USER,
+                MasterUserPassword=DB_PASSWORD,
+                Port=int(DB_PORT),
+                NumberOfNodes=int(NUM_NODES),
+                IamRoles=[roleArn]
+            )
 
-    # # Create Redshift Cluster
-    # try:
-    #     response = redshift.create_cluster(
-    #         DBName=DB_NAME,
-    #         ClusterIdentifier=CLUSTER_IDENTIFIER,
-    #         ClusterType=CLUSTER_TYPE,
-    #         NodeType=NODE_TYPE,
-    #         MasterUsername=DB_USER,
-    #         MasterUserPassword=DB_PASSWORD,
-    #         Port=int(DB_PORT),
-    #         NumberOfNodes=int(NUM_NODES),
-    #         IamRoles=[
-    #             roleArn
-    #         ]
-    #     )
-    #     # Wait for the cluster to become available
-    #     clusterReady = False
-    #     clusterProps = None
-    #     while not clusterReady:
-    #         clusterProps = redshift.describe_clusters(ClusterIdentifier=CLUSTER_IDENTIFIER)['Clusters'][0]
-    #         clusterStatus = clusterProps.items()['ClusterStatus']
-    #         if not clusterStatus == 'available':
-    #             continue
-    #         if clusterStatus == 'available':
-    #             clusterReady = True
-    #             break
+            # Wait for the cluster to become available
+            # Set timeout and sleep duration
+            timeout_seconds = 600
+            sleep_duration = 10
+            clusterReady = False
+            start_time = time.time()
+            while not clusterReady:
+                # Check timeout
+                if time.time() - start_time > timeout_seconds:
+                    logging.error(f"Timeout waiting for cluster '{CLUSTER_IDENTIFIER}' to become available.")
+                    break
 
-    #     if clusterProps is not None:
-    #         # Fetch cluster info
-    #         ENDPOINT = clusterProps['Endpoint']['Address']
-    #         ROLE_ARN = clusterProps['IamRoles'][0]['IamRoleArn']
-    #         # Open incoming TCP to the cluster
-    #         vpc = ec2.Vpc(id=clusterProps['VpcId'])
-    #         defaultSg = list(vpc.security_groups.all())[0]
-            
-    #         defaultSg.authorize_ingress(
-    #             GroupName=defaultSg.group_name,
-    #             CidrIp='0.0.0.0/0',
-    #             IpProtocol='tcp',
-    #             FromPort=int(DB_PORT),
-    #             ToPort=int(DB_PORT)
-    #         )
+                clusterProps = redshift.describe_clusters(ClusterIdentifier=CLUSTER_IDENTIFIER)['Clusters'][0]
+                clusterStatus = clusterProps['ClusterStatus']
+                
+                if clusterStatus != 'available':
+                    time.sleep(sleep_duration)
+                    continue
+                
+                clusterReady = True
 
-    # except Exception as e:
-    #     print(e)
+        if clusterProps is not None:
+            # Fetch cluster info
+            ENDPOINT = clusterProps['Endpoint']['Address']
+            ROLE_ARN = clusterProps['IamRoles'][0]['IamRoleArn']
+
+            # Open incoming TCP to the cluster
+            vpc = ec2.Vpc(id=clusterProps['VpcId'])
+            defaultSg = list(vpc.security_groups.all())[0]
+
+            defaultSg.authorize_ingress(
+                GroupName=defaultSg.group_name,
+                CidrIp='0.0.0.0/0',
+                IpProtocol='tcp',
+                FromPort=int(DB_PORT),
+                ToPort=int(DB_PORT)
+            )
+
+    except botocore.exceptions.ClientError as e:
+        # Check if the error code is ClusterAlreadyExists
+        if e.response['Error']['Code'] == 'ClusterAlreadyExists':
+            # Redshift cluster already exists, print a message or handle accordingly
+            logging.warning(f"Redshift cluster '{CLUSTER_IDENTIFIER}' already exists. Skipping cluster creation.")
+        else:
+            # Handle other errors
+            logging.error(f"An error occurred while creating Redshift cluster '{CLUSTER_IDENTIFIER}': {e}")
 
 
 if __name__ == '__main__':

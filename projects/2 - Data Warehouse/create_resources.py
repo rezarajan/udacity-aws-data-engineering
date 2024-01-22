@@ -89,7 +89,7 @@ def main():
         clusterProps = None
         if roleArn != '':
             # Attempt to create Redshift cluster
-            response = redshift.create_cluster(
+            redshift.create_cluster(
                 DBName=DB_NAME,
                 ClusterIdentifier=CLUSTER_IDENTIFIER,
                 ClusterType=CLUSTER_TYPE,
@@ -109,7 +109,8 @@ def main():
             start_time = time.time()
             while not clusterReady:
                 # Check timeout
-                if time.time() - start_time > timeout_seconds:
+                time_elapsed = time.time() - start_time
+                if time_elapsed > timeout_seconds:
                     logging.error(f"Timeout waiting for cluster '{CLUSTER_IDENTIFIER}' to become available.")
                     break
 
@@ -117,6 +118,7 @@ def main():
                 clusterStatus = clusterProps['ClusterStatus']
                 
                 if clusterStatus != 'available':
+                    logging.info(f'Cluster is creating...{time_elapsed} seconds elapsed.')
                     time.sleep(sleep_duration)
                     continue
                 
@@ -131,13 +133,19 @@ def main():
             vpc = ec2.Vpc(id=clusterProps['VpcId'])
             defaultSg = list(vpc.security_groups.all())[0]
 
-            defaultSg.authorize_ingress(
-                GroupName=defaultSg.group_name,
-                CidrIp='0.0.0.0/0',
-                IpProtocol='tcp',
-                FromPort=int(DB_PORT),
-                ToPort=int(DB_PORT)
-            )
+            try:
+                defaultSg.authorize_ingress(
+                    GroupName=defaultSg.group_name,
+                    CidrIp='0.0.0.0/0',
+                    IpProtocol='tcp',
+                    FromPort=int(DB_PORT),
+                    ToPort=int(DB_PORT)
+                )
+            except botocore.exceptions.ClientError as creation_error:
+                if creation_error.response['Error']['Code'] == 'InvalidPermission.Duplicate':
+                    logging.warning("Ingress rule already exists. Skipping.")
+                else:
+                    logging.error(f"An error occurred during creation: {creation_error}")
 
     except botocore.exceptions.ClientError as e:
         # Check if the error code is ClusterAlreadyExists

@@ -4,12 +4,17 @@ import logging
 import boto3
 import json
 import time
+from pathlib import Path
 
 def main():
     logging.basicConfig(level=logging.INFO)  # Set the logging level
-    # Parse datawarehouse config dwh.cfg
+
+    # Load pararameters from dwh.cfg
+    path = Path(__file__)
+    ROOT_DIR = path.parent.absolute() # Use root path if calling script from a separate directory
+    config_path = Path(ROOT_DIR, 'dwh.cfg')
     config = configparser.ConfigParser()
-    config.read_file(open('dwh.cfg'))
+    config.read_file(open(config_path))
 
     KEY                = config.get('AWS','KEY')
     SECRET             = config.get('AWS','SECRET')

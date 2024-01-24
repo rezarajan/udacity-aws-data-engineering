@@ -7,20 +7,54 @@ config.read('dwh.cfg')
 
 # DROP TABLES
 
-staging_events_table_drop = ""
-staging_songs_table_drop = ""
-songplay_table_drop = ""
-user_table_drop = ""
-song_table_drop = ""
-artist_table_drop = ""
-time_table_drop = ""
+staging_events_table_drop = "DROP TABLE IF EXISTS staging_events;"
+staging_songs_table_drop = "DROP TABLE IF EXISTS staging_songs;"
+songplay_table_drop = "DROP TABLE IF EXISTS f_songlplay;"
+user_table_drop = "DROP TABLE IF EXISTS d_user;"
+song_table_drop = "DROP TABLE IF EXISTS d_song;"
+artist_table_drop = "DROP TABLE IF EXISTS d_artist;"
+time_table_drop = "DROP TABLE IF EXISTS d_time;"
 
 # CREATE TABLES
 
+# Staging tables do not contain 'NOT NULL' constraints so as to
+# avoid dirty data issues - we want all data from S3 to be ingested
 staging_events_table_create= ("""
+    CREATE TABLE IF NOT EXISTS staging_events (
+        artist          VARCHAR(255),
+        auth            VARCHAR (255),
+        firstName       VARCHAR(255),
+        gender          VARCHAR(1),
+        itemInSession   SMALLINT,
+        lastName        VARCHAR(255),
+        length          FLOAT,
+        level           VARCHAR(20),
+        location        VARCHAR(255),
+        method          VARCHAR(6),
+        page            VARCHAR(255),
+        registration    FLOAT,
+        sessionId       SMALLINT,
+        song            VARCHAR(255),
+        status          SMALLINT,
+        ts              TIMESTAMP,
+        userAgent       VARCHAR(255),
+        userId          INTEGER
+    )
 """)
 
 staging_songs_table_create = ("""
+    CREATE TABLE IF NOT EXISTS staging_songs (
+        song_id             VARCHAR(20) PRIMARY KEY,
+        num_songs           INTEGER,
+        artist_id           VARCHAR(20),
+        artist_name         VARCHAR(255),
+        artist_latitude     DECIMAL(9,6),
+        artist_longitude    DECIMAL(9,6),
+        artist_location     VARCHAR(255),
+        title               VARCHAR(255),
+        duration            FLOAT,
+        year                SMALLINT
+    )
 """)
 
 songplay_table_create = ("""

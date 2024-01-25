@@ -39,7 +39,7 @@ staging_events_table_create= ("""
         ts              TIMESTAMP,
         userAgent       VARCHAR(255),
         userId          INTEGER
-    )
+    );
 """)
 
 staging_songs_table_create = ("""
@@ -54,22 +54,63 @@ staging_songs_table_create = ("""
         title               VARCHAR(255),
         duration            FLOAT,
         year                SMALLINT
-    )
+    );
 """)
 
 songplay_table_create = ("""
+    CREATE TABLE IF NOT EXISTS f_songplay DISTSTYLE AUTO (
+        songplay_id INTEGER IDENTITY(1,1) PRIMARY KEY,
+        start_time  TIMESTAMP NOT NULL SORTKEY DISTKEY REFERENCES d_time(start_time),
+        user_id     INTEGER NOT NULL REFERENCES d_user(user_id),
+        level       VARCHAR(20) REFERENCES d_user(level),
+        song_id     INTEGER NOT NULL REFERENCES d_song(song_id),
+        artist_id   VARCHAR(20) NOT NULL REFERENCES d_artist(artist_id),
+        session_id  SMALLINT NOT NULL,
+        location    VARCHAR(255),
+        user_agent  VARCHAR(255)
+    );
 """)
 
 user_table_create = ("""
+    CREATE TABLE IF NOT EXISTS d_user (
+        user_id     INTEGER PRIMARY KEY SORTKEY DISTKEY,
+        first_name  VARCHAR(255) NOT NULL,
+        last_name   VARCHAR(255) NOT NULL,
+        gender      VARCHAR(1),
+        level       VARCHAR(20)
+    );                  
 """)
 
 song_table_create = ("""
+    CREATE TABLE IF NOT EXISTS d_song (
+        song_id     VARCHAR(20) PRIMARY KEY SORTKEY DISTKEY,
+        title       VARCHAR(255) NOT NULL,
+        artist_id   VARCHAR(20) NOT NULL,
+        year        SMALLINT NOT NULL,
+        duration    FLOAT NOT NULL
+    );
 """)
 
 artist_table_create = ("""
+    CREATE TABLE IF NOT EXISTS d_artist (
+        artist_id   VARCHAR(20) PRIMARY KEY SORTKEY DISTKEY,
+        name        VARCHAR(255) NOT NULL,
+        location    VARCHAR(255),
+        latitude    DECIMAL(9.6),
+        longitude   DECIMAL (9.6)
+    );
 """)
 
 time_table_create = ("""
+    CREATE TABLE IF NOT EXISTS d_time DISTSTYLE ALL (
+        start_time  TIMESTAMP PRIMARY KEY SORTKEY DISTKEY,
+        hour        SMALLINT NOT NULL,  
+        day         SMALLINT NOT NULL,
+        week        SMALLINT NOT NULL,
+        month       SMALLINT NOT NULL,
+        year        SMALLINT NOT NULL,
+        weekday     SMALLINT NOT NULL
+    );
 """)
 
 # STAGING TABLES

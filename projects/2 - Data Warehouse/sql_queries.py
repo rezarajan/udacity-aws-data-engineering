@@ -1,9 +1,26 @@
+import botocore.exceptions
 import configparser
+import logging
+import boto3
+from pathlib import Path
 
+ # Set the logging level
+logging.basicConfig(level=logging.INFO)
 
-# CONFIG
+# Load pararameters from dwh.cfg
+path = Path(__file__)
+ROOT_DIR = path.parent.absolute() # Use root path if calling script from a separate directory
+config_path = Path(ROOT_DIR, 'dwh.cfg')
 config = configparser.ConfigParser()
-config.read('dwh.cfg')
+config.read_file(open(config_path))
+
+REGION          = config.get("AWS","REGION")
+
+LOG_DATA        = config.get("S3","LOG_DATA")
+LOG_JSONPATH    = config.get("S3","LOG_JSONPATH")
+SONG_DATA       = config.get("S3","SONG_DATA")
+
+IAM_ROLE_ARN    = config.get("S3","IAM_ROLE_ARN")
 
 # DROP TABLES
 
@@ -70,7 +87,6 @@ songplay_table_create = ("""
         user_agent  VARCHAR(255)
     );
 """)
-
 user_table_create = ("""
     CREATE TABLE IF NOT EXISTS d_user (
         user_id     INTEGER PRIMARY KEY SORTKEY DISTKEY,
@@ -115,32 +131,97 @@ time_table_create = ("""
 
 # STAGING TABLES
 
-staging_events_copy = ("""
-""").format()
+staging_events_copy = (f"""
+    COPY staging_events
+    FROM '{LOG_DATA}'
+    IAM_ROLE '{IAM_ROLE_ARN}'
+    REGION '{REGION}'
+    JSON '{LOG_JSONPATH}';
+""")
 
-staging_songs_copy = ("""
-""").format()
+staging_songs_copy = (f"""
+    COPY staging_songs
+    FROM '{SONG_DATA}'
+    IAM_ROLE '{IAM_ROLE_ARN}'
+    REGION '{REGION}'
+    JSON 'auto';
+""")
 
 # FINAL TABLES
 
 songplay_table_insert = ("""
+    INSERT INTO f_songplay (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent)
+    SELECT
+        e.ts,
+        e.userId,
+        e.level,
+        s.song_id,
+        s.artist_id,
+        e.sessionId,
+        e.location,
+        e.userAgent
+    FROM staging_events e
+    JOIN staging_songs s ON (
+            LOWER(TRIM(e.song = s.title)) 
+            AND LOWER(TRIM(e.artist = s.artist_name))
+        )
+    AND e.page = 'NextSong';
 """)
 
 user_table_insert = ("""
+    INSERT INTO d_user (user_id, first_name, last_name, gender, level)
+    SELECT
+        DISTINCT e.userId,
+        e.firstName,
+        e.lastName,
+        e.gender,
+        e.level
+    FROM staging_events e
+    WHERE e.userId IS NOT NULL;
 """)
 
 song_table_insert = ("""
+    INSERT INTO d_song (song_id, title, artist_id, year, duration)
+    SELECT
+        DISTINCT s.song_id,
+        s.title,
+        s.artist_id,
+        s.year,
+        s.duration
+    FROM staging_songs s
+    WHERE s.song_id IS NOT NULL;
 """)
 
 artist_table_insert = ("""
+    INSERT INTO d_artist (artist_id, name, location, latitude, longitude)
+    SELECT
+        DISTINCT s.artist_id,
+        s.artist_name,
+        s.artist_location,
+        s.artist_latitude,
+        s.artist_longitude
+    FROM staging_songs s
+    WHERE s.artist_id IS NOT NULL;
 """)
 
 time_table_insert = ("""
+    INSERT INTO d_time (start_time, hour, day, week, month, year, weekday)
+    SELECT
+        DISTINCT s.start_time,
+        EXTRACT(hour FROM s.start_time),
+        EXTRACT(day FROM s.start_time),
+        EXTRACT(week FROM s.start_time),
+        EXTRACT(month FROM s.start_time),
+        EXTRACT(year FROM s.start_time),
+        EXTRACT(dayofweek FROM s.start_time)
+    FROM f_songplay s;
 """)
 
 # QUERY LISTS
+
 
 create_table_queries = [staging_events_table_create, staging_songs_table_create, songplay_table_create, user_table_create, song_table_create, artist_table_create, time_table_create]
 drop_table_queries = [staging_events_table_drop, staging_songs_table_drop, songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
 copy_table_queries = [staging_events_copy, staging_songs_copy]
 insert_table_queries = [songplay_table_insert, user_table_insert, song_table_insert, artist_table_insert, time_table_insert]
+

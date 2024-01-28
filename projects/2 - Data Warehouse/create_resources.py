@@ -248,7 +248,7 @@ def main():
     clusterProps = CreateCluster(roleArn, cluster_config, TIMEOUT_SECONDS, SLEEP_DURATION)
     if clusterProps:
         # Update config with endpoint
-        UpdateConfig(config_path, 'CLUSTER', 'ENDPOINT', clusterProps['Endpoint']['Address'])
+        UpdateConfig(config_path, 'CLUSTER', 'HOST', clusterProps['Endpoint']['Address'])
     
     # Create Ingress
     CreateIngress(clusterProps, DB_PORT)

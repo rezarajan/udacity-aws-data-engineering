@@ -192,7 +192,7 @@ def main():
     # Delete the Redshift Cluster and update the config
     clusterDeleted = DeleteCluster(CLUSTER_IDENTIFIER, TIMEOUT_SECONDS, SLEEP_DURATION)
     if clusterDeleted:
-        UpdateConfig(config_path, 'CLUSTER', 'ENDPOINT', '')
+        UpdateConfig(config_path, 'CLUSTER', 'HOST', '')
     
     # Delete the IAM Role and update the config
     roleDeleted = DeleteRole(IAM_ROLE_NAME)

@@ -5,6 +5,7 @@ import boto3
 import json
 import time
 from pathlib import Path
+from update_config import UpdateConfig
 
 def CreateRole(RoleName, AssumeRolePolicyDocument):
     """
@@ -230,6 +231,7 @@ def main():
     })
     # Create IAM Role
     roleArn = CreateRole(IAM_ROLE_NAME, assume_role_policy_document)
+    UpdateConfig(config_path, 'IAM', 'IAM_ROLE_ARN', roleArn) # Update the config value
 
     # Create Redshift Cluster
     cluster_config = {
@@ -244,6 +246,9 @@ def main():
     }
 
     clusterProps = CreateCluster(roleArn, cluster_config, TIMEOUT_SECONDS, SLEEP_DURATION)
+    if clusterProps:
+        # Update config with endpoint
+        UpdateConfig(config_path, 'CLUSTER', 'ENDPOINT', clusterProps['Endpoint']['Address'])
     
     # Create Ingress
     CreateIngress(clusterProps, DB_PORT)

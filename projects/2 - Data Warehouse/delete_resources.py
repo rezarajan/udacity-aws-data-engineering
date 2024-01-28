@@ -4,6 +4,7 @@ import logging
 import boto3
 import time
 from pathlib import Path
+from update_config import UpdateConfig
 
 def DeleteRole(RoleName):
     """
@@ -11,7 +12,11 @@ def DeleteRole(RoleName):
 
     Parameters:
     - RoleName (str): The name of the IAM role.
+
+    Returns:
+    - Boolean: True if IAM role is deleted, false otherwise.
     """
+    result = False
     iam = boto3.client('iam')
     try:
         # Try to fetch IAM role details
@@ -25,6 +30,7 @@ def DeleteRole(RoleName):
         # After detaching policies, delete the IAM role
         iam.delete_role(RoleName=RoleName)
         logging.info(f"IAM Role '{RoleName}' deleted successfully.")
+        success = False
     except botocore.exceptions.ClientError as e:
         # Check if the error code is NoSuchEntity
         if e.response['Error']['Code'] == 'NoSuchEntity':
@@ -33,6 +39,8 @@ def DeleteRole(RoleName):
         else:
             # Handle other errors
             logging.error(f"An error occurred while deleting IAM Role '{RoleName}': {e}")
+    
+    return result
 
 def FetchClusterProps(ClusterIdentifier):
     """
@@ -106,7 +114,11 @@ def DeleteCluster(ClusterIdentifier, TimeoutSeconds, SleepDuration):
     - ClusterIdentifier (str): The identifier of the Redshift cluster.
     - TimeoutSeconds (int): The timeout afterwhich checking for cluster deletion will terminate (seconds).
     - SleepDuration (int): Duration to sleep between polling for resource status.
+
+    Returns:
+    - Boolean: True if cluster is deleted, false otherwise.
     """
+    clusterDeleted = False
     redshift = boto3.client('redshift')
 
     try:
@@ -114,7 +126,6 @@ def DeleteCluster(ClusterIdentifier, TimeoutSeconds, SleepDuration):
         redshift.delete_cluster(ClusterIdentifier=ClusterIdentifier, SkipFinalClusterSnapshot=True)
 
         # Wait for the cluster to be deleted
-        clusterDeleted = False
         start_time = time.time()
 
         while not clusterDeleted:
@@ -141,6 +152,8 @@ def DeleteCluster(ClusterIdentifier, TimeoutSeconds, SleepDuration):
         else:
             # Handle other errors
             logging.error(f"An error occurred while deleting the Redshift Cluster {ClusterIdentifier}: {e}")
+    
+    return clusterDeleted
 
 def main():
     logging.basicConfig(level=logging.INFO)  # Set the logging level
@@ -175,10 +188,16 @@ def main():
     clusterProps = FetchClusterProps(CLUSTER_IDENTIFIER)
     # Revoke Ingress Rules
     RevokeIngress(clusterProps, DB_PORT)
-    # Delete the Redshift Cluster
-    DeleteCluster(CLUSTER_IDENTIFIER, TIMEOUT_SECONDS, SLEEP_DURATION)
-    # Delete the IAM Role
-    DeleteRole(IAM_ROLE_NAME)
+
+    # Delete the Redshift Cluster and update the config
+    clusterDeleted = DeleteCluster(CLUSTER_IDENTIFIER, TIMEOUT_SECONDS, SLEEP_DURATION)
+    if clusterDeleted:
+        UpdateConfig(config_path, 'CLUSTER', 'ENDPOINT', '')
+    
+    # Delete the IAM Role and update the config
+    roleDeleted = DeleteRole(IAM_ROLE_NAME)
+    if clusterDeleted:
+        UpdateConfig(config_path, 'IAM', 'IAM_ROLE_ARN', '')
 
 
 if __name__ == '__main__':

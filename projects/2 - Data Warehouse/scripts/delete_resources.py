@@ -1,10 +1,7 @@
-import logging
 import boto3
 from helpers import LoadConfig, UpdateConfig, DeleteRole, FetchClusterProps, RevokeIngress, DeleteCluster
 
-def main():
-    logging.basicConfig(level=logging.INFO)  # Set the logging level
-    
+def main():    
     # Autoload dwh config file
     config = LoadConfig(autoload=True)
 

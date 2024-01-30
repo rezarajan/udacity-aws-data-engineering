@@ -1,10 +1,8 @@
-import logging
 import boto3
 import json
 from helpers import LoadConfig, UpdateConfig, CreateRole, CreateCluster, CreateIngress
 
 def main():
-    logging.basicConfig(level=logging.INFO)  # Set the logging level
 
     # Autoload dwh config file
     config = LoadConfig(autoload=True)

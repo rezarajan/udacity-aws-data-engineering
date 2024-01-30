@@ -62,7 +62,7 @@ staging_songs_table_create = ("""
         song_id             VARCHAR(20) PRIMARY KEY,
         num_songs           INTEGER,
         artist_id           VARCHAR(20),
-        artist_name         VARCHAR(350),
+        artist_name         VARCHAR(400),
         artist_latitude     DECIMAL(9,6),
         artist_longitude    DECIMAL(9,6),
         artist_location     VARCHAR(350),
@@ -95,7 +95,7 @@ song_table_create = ("""
 artist_table_create = ("""
     CREATE TABLE IF NOT EXISTS d_artist (
         artist_id   VARCHAR(20) PRIMARY KEY SORTKEY DISTKEY,
-        name        VARCHAR(350) NOT NULL,
+        name        VARCHAR(400) NOT NULL,
         location    VARCHAR(350),
         latitude    DECIMAL(9,6),
         longitude   DECIMAL (9,6)

@@ -2,6 +2,7 @@ import configparser
 import psycopg2
 from pathlib import Path
 from sql_queries import create_table_queries, drop_table_queries
+from helpers import LoadConfig
 
 
 def drop_tables(cur, conn):
@@ -17,12 +18,7 @@ def create_tables(cur, conn):
 
 
 def main():
-    # Load pararameters from dwh.cfg
-    path = Path(__file__)
-    ROOT_DIR = path.parent.absolute() # Use root path if calling script from a separate directory
-    config_path = Path(ROOT_DIR, 'dwh.cfg')
-    config = configparser.ConfigParser()
-    config.read_file(open(config_path))
+    config = LoadConfig(autoload=True)
 
     conn = psycopg2.connect(
         dbname=config.get("CLUSTER", "DB_NAME"),

@@ -1,16 +1,13 @@
 import configparser
 import logging
 from pathlib import Path
+from helpers import LoadConfig
 
  # Set the logging level
 logging.basicConfig(level=logging.INFO)
 
 # Load pararameters from dwh.cfg
-path = Path(__file__)
-ROOT_DIR = path.parent.absolute() # Use root path if calling script from a separate directory
-config_path = Path(ROOT_DIR, 'dwh.cfg')
-config = configparser.ConfigParser()
-config.read_file(open(config_path))
+config = LoadConfig(autoload=True)
 
 REGION          = config.get("AWS","REGION_NAME")
 

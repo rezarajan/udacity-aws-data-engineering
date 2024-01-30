@@ -1,4 +1,5 @@
 import logging
+import argparse
 import psycopg2
 from pathlib import Path
 from sql_queries import copy_table_queries, insert_table_queries
@@ -29,13 +30,21 @@ def main():
         port=config.get("CLUSTER", "DB_PORT")
     )
     cur = conn.cursor()
-    
-    # Load staging table data
-    load_staging_tables(cur, conn)
-    logging.info('Staging tables loaded')
 
-    insert_tables(cur, conn)
-    logging.info('ETL completed.')
+    parser = argparse.ArgumentParser(description='Execute ETL operations.')
+    parser.add_argument('operation', choices=['load', 'etl'], nargs='?', default='all', help='Specify the operation to perform (load, etl, or all).')
+
+    args = parser.parse_args()
+
+    if args.operation in ['all', 'load']:
+        logging.info('Loading staging data.')
+        load_staging_tables(cur, conn)
+        logging.info('Staging tables loaded.')
+
+    if args.operation in ['all', 'etl']:
+        logging.info('Performing ETL.')
+        insert_tables(cur, conn)
+        logging.info('ETL completed.')
 
     conn.close()
 

@@ -1,21 +1,13 @@
-import configparser
 import logging
 import boto3
 import json
-from pathlib import Path
-from helpers import UpdateConfig, CreateRole, CreateCluster, CreateIngress
-
-
+from helpers import LoadConfig, UpdateConfig, CreateRole, CreateCluster, CreateIngress
 
 def main():
     logging.basicConfig(level=logging.INFO)  # Set the logging level
 
-    # Load pararameters from dwh.cfg
-    path = Path(__file__)
-    ROOT_DIR = path.parent.absolute() # Use root path if calling script from a separate directory
-    config_path = Path(ROOT_DIR, 'dwh.cfg')
-    config = configparser.ConfigParser()
-    config.read_file(open(config_path))
+    # Autoload dwh config file
+    config = LoadConfig(autoload=True)
 
     KEY                = config.get('AWS','KEY')
     SECRET             = config.get('AWS','SECRET')
@@ -59,7 +51,7 @@ def main():
     })
     # Create IAM Role
     roleArn = CreateRole(IAM_ROLE_NAME, assume_role_policy_document)
-    UpdateConfig(config_path, 'IAM', 'IAM_ROLE_ARN', roleArn) # Update the config value
+    UpdateConfig('IAM', 'IAM_ROLE_ARN', roleArn, autoload=True) # Update the config value
 
     # Create Redshift Cluster
     cluster_config = {
@@ -76,7 +68,7 @@ def main():
     clusterProps = CreateCluster(roleArn, cluster_config, TIMEOUT_SECONDS, SLEEP_DURATION)
     if clusterProps:
         # Update config with endpoint
-        UpdateConfig(config_path, 'CLUSTER', 'HOST', clusterProps['Endpoint']['Address'])
+        UpdateConfig('CLUSTER', 'HOST', clusterProps['Endpoint']['Address'], autoload=True)
     
     # Create Ingress
     CreateIngress(clusterProps, DB_PORT)

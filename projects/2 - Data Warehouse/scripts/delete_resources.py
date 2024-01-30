@@ -1,18 +1,12 @@
-import configparser
 import logging
 import boto3
-from pathlib import Path
-from helpers import UpdateConfig, DeleteRole, FetchClusterProps, RevokeIngress, DeleteCluster
+from helpers import LoadConfig, UpdateConfig, DeleteRole, FetchClusterProps, RevokeIngress, DeleteCluster
 
 def main():
     logging.basicConfig(level=logging.INFO)  # Set the logging level
     
-    # Load pararameters from dwh.cfg
-    path = Path(__file__)
-    ROOT_DIR = path.parent.absolute() # Use root path if calling script from a separate directory
-    config_path = Path(ROOT_DIR, 'dwh.cfg')
-    config = configparser.ConfigParser()
-    config.read_file(open(config_path))
+    # Autoload dwh config file
+    config = LoadConfig(autoload=True)
 
     KEY                    = config.get('AWS','KEY')
     SECRET                 = config.get('AWS','SECRET')
@@ -41,12 +35,12 @@ def main():
     # Delete the Redshift Cluster and update the config
     clusterDeleted = DeleteCluster(CLUSTER_IDENTIFIER, TIMEOUT_SECONDS, SLEEP_DURATION)
     if clusterDeleted:
-        UpdateConfig(config_path, 'CLUSTER', 'HOST', '')
+        UpdateConfig('CLUSTER', 'HOST', '', autoload=True)
     
     # Delete the IAM Role and update the config
     roleDeleted = DeleteRole(IAM_ROLE_NAME)
     if clusterDeleted:
-        UpdateConfig(config_path, 'IAM', 'IAM_ROLE_ARN', '')
+        UpdateConfig('IAM', 'IAM_ROLE_ARN', '', autoload=True)
 
 
 if __name__ == '__main__':

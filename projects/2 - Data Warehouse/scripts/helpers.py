@@ -3,8 +3,38 @@ import configparser
 import logging
 import boto3
 import time
+from pathlib import Path
 
-def UpdateConfig(filepath, section, option, value):
+def AutoLoad():
+    """
+    Returns the autoloaded path to dwh.cfg.
+    """
+    # Load pararameters from dwh.cfg
+    path = Path(__file__)
+    parent_dir = path.parents[1].absolute() # Use root path if calling script from a separate directory
+    config_path = Path(parent_dir, 'dwh.cfg')
+    return config_path
+
+def LoadConfig(filepath='', autoload=False):
+    """
+    Loads the specified config file.
+
+    Parameters:
+    - filepath (str): Path to the config file
+    - autoload (bool): If set to true, defaults to loading 'dwh.cfg' from the parent directory.
+
+    Returns:
+    - config: ConfigParser config.
+    """
+    config_path = filepath
+    if autoload:
+        config_path = AutoLoad()
+    config = configparser.ConfigParser()
+    config.read_file(open(config_path))
+
+    return config
+
+def UpdateConfig(section, option, value, filepath='', autoload=False, ):
     """
     Updates a config file with the passed values.
 
@@ -14,10 +44,13 @@ def UpdateConfig(filepath, section, option, value):
     - option (str): The item under the specified section to be updated.
     - value (str): Value to assign the item.
     """
+    config_path = filepath
+    if autoload:
+        config_path = AutoLoad()
     # Read the config and preserve the casing of items
     config = configparser.ConfigParser(interpolation=None)
     config.optionxform = str # type: ignore
-    config.read_file(open(filepath))
+    config.read_file(open(config_path))
 
     # Update the option with the new value
     config.set(section, option, value)
@@ -38,7 +71,7 @@ def CreateRole(RoleName, AssumeRolePolicyDocument):
 
     Example:
     ```
-    role_arn = create_role('MyRole')
+    role_arn = CreateRole('MyRole')
     print(f'IAM Role ARN: {role_arn}')
     ```
 
@@ -100,7 +133,7 @@ def CreateCluster(RoleARN, ClusterConfig, TimeoutSeconds, SleepDuration):
         # Add other configuration parameters
     }
     role_arn = 'arn:aws:iam::123456789012:role/RedshiftRole'
-    cluster_properties = createCluster(role_arn, cluster_config)
+    cluster_properties = CreateCluster(role_arn, cluster_config)
     ```
 
     Note:
@@ -164,7 +197,7 @@ def CreateIngress(ClusterProps, DbPort):
         # Add other cluster properties
     }
     db_port = 5439
-    createIngress(cluster_props, db_port)
+    CreateIngress(cluster_props, db_port)
     ```
 
     Note:

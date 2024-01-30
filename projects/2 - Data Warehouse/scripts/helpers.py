@@ -34,7 +34,7 @@ def LoadConfig(filepath='', autoload=False):
 
     return config
 
-def UpdateConfig(section, option, value, filepath='', autoload=False, ):
+def UpdateConfig(section, option, value, filepath='', autoload=False):
     """
     Updates a config file with the passed values.
 
@@ -56,7 +56,7 @@ def UpdateConfig(section, option, value, filepath='', autoload=False, ):
     config.set(section, option, value)
 
     # Save the changes back to the config file
-    with open(filepath, 'w') as configfile:
+    with open(config_path, 'w') as configfile:
         config.write(configfile)
 
 def CreateRole(RoleName, AssumeRolePolicyDocument):

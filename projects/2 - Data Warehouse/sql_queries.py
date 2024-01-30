@@ -1,7 +1,5 @@
-import botocore.exceptions
 import configparser
 import logging
-import boto3
 from pathlib import Path
 
  # Set the logging level

@@ -121,7 +121,7 @@ songplay_table_create = ("""
         start_time  TIMESTAMP NOT NULL SORTKEY REFERENCES d_time(start_time),
         user_id     INTEGER NOT NULL REFERENCES d_user(user_id),
         level       VARCHAR(20),
-        song_id     INTEGER NOT NULL REFERENCES d_song(song_id),
+        song_id     VARCHAR(20) NOT NULL REFERENCES d_song(song_id),
         artist_id   VARCHAR(20) NOT NULL REFERENCES d_artist(artist_id),
         session_id  SMALLINT NOT NULL,
         location    VARCHAR(255),

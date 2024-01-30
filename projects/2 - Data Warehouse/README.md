@@ -1,3 +1,8 @@
+### Entity Relationship Diagram (ERD)
+Below you can find the ERD for the database, containing the staging tables and the fact and dimension tables.
+
+![erd](images/erd.png 'ERD')
+
 ### Sample Queries
 
 ```sql
@@ -18,7 +23,7 @@ ORDER BY row_count DESC;
 |d_song|384995|
 |d_artist|45266|
 |staging_events|8056|
-|f_songplay|7272|
+|f_songplay|6964|
 |d_time|6487|
 |d_user|105|
 
@@ -40,16 +45,17 @@ LIMIT 10;
 
 |artist_name|play_time|
 |-----------|---------|
-|Three Drives|49525.76240000001|
-|Kanye West|48078.28928000006|
-|Franz Ferdinand|29370.03556000002|
-|O'Rosko Raricim|28111.96726|
-|Coldplay|26307.352010000017|
-|Nate Dogg / Eminem / Obie Trice / Bobby Creekwater|25856.8721|
-|Eminem / Dr. Dre|25451.164790000003|
-|Eminem / Bizarre|25228.88933|
-|Eminem / Paul "Bunyan" Rosenburg|25228.88933|
-|Eminem / Dr. Dre / 50 Cent|25228.88933|
+|Three Drives|49525.76240000002|
+|Kanye West|31538.1565|
+|3 Drives On A Vinyl|24762.881200000025|
+|Coldplay|19392.333560000003|
+|O'Rosko Raricim|18850.842619999996|
+|The Killers / Wild Light / Mariachi El Bronx|17331.511530000007|
+|Killers|17331.511530000007|
+|The Killers / Toni Halliday|17331.511530000007|
+|The Killers / Lou Reed|17331.511530000007|
+|The Killers|17331.511530000007|
+
 
 ```sql
 -- Top 10 most played artists for the year by play count
@@ -67,16 +73,13 @@ LIMIT 10;
 
 |artist_name|total_plays|
 |-----------|-----------|
-|Kanye West|112|
 |Three Drives|110|
-|Kings Of Leon|77|
+|Kanye West|82|
 |Amy Winehouse|75|
-|Coldplay|71|
-|O'Rosko Raricim|69|
-|Usher|66|
-|Killers|62|
-|The Killers|62|
-|The Killers / Lou Reed|62|
-
-
-We can see that from this simple query, while Franz Ferdinand is a top 10 in terms of play time, it is not the case for the number of song plays itself. Redshift allows us to quickly query all this data expeditiously.
+|Coldplay|58|
+|Killers|57|
+|The Killers|57|
+|The Killers / Lou Reed|57|
+|The Killers / Toni Halliday|57|
+|The Killers / Wild Light / Mariachi El Bronx|57|
+|Kings Of Leon|56|

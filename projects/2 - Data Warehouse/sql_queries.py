@@ -151,8 +151,8 @@ staging_songs_copy = (f"""
 
 songplay_table_insert = ("""
     INSERT INTO f_songplay (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent)
-    SELECT
-        e.ts,
+    SELECT DISTINCT
+        TIMESTAMP 'epoch' + e.ts/1000 * INTERVAL '1 second',
         e.userId,
         e.level,
         s.song_id,
@@ -162,8 +162,8 @@ songplay_table_insert = ("""
         e.userAgent
     FROM staging_events e
     JOIN staging_songs s ON (
-            LOWER(TRIM(e.song = s.title)) 
-            AND LOWER(TRIM(e.artist = s.artist_name))
+            LOWER(TRIM(e.song)) = LOWER(TRIM(s.title)) 
+            AND LOWER(TRIM(e.artist)) = LOWER(TRIM(s.artist_name))
         )
     AND e.page = 'NextSong';
 """)

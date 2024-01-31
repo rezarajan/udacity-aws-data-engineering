@@ -22,6 +22,9 @@ def create_tables(cur, conn):
 
 
 def main():
+    """
+    Drops and recreates tables on Redshift.
+    """
     config = LoadConfig(autoload=True)
 
     conn = psycopg2.connect(

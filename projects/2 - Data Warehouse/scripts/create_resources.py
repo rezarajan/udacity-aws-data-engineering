@@ -3,7 +3,9 @@ import json
 from helpers import LoadConfig, UpdateConfig, CreateRole, CreateCluster, CreateIngress
 
 def main():
-
+    """
+    Creates all required AWS resources for the project, and updates the config file.
+    """
     # Autoload dwh config file
     config = LoadConfig(autoload=True)
 

@@ -1,17 +1,21 @@
-import configparser
 import psycopg2
-from pathlib import Path
 from sql_queries import create_table_queries, drop_table_queries
 from helpers import LoadConfig
 
 
 def drop_tables(cur, conn):
+    """
+    Executes the queries to drop all tables.
+    """
     for query in drop_table_queries:
         cur.execute(query)
         conn.commit()
 
 
 def create_tables(cur, conn):
+    """
+    Executes the queries to create the staging tables, and the dimensional model tables.
+    """
     for query in create_table_queries:
         cur.execute(query)
         conn.commit()

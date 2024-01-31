@@ -1,7 +1,10 @@
 import boto3
 from helpers import LoadConfig, UpdateConfig, DeleteRole, FetchClusterProps, RevokeIngress, DeleteCluster
 
-def main():    
+def main():
+    """
+    Deletes all AWS resources for the project, and updates the config file.
+    """    
     # Autoload dwh config file
     config = LoadConfig(autoload=True)
 

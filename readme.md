@@ -24,3 +24,17 @@ Skills Tested:
 - AWS Redshift
 - Python (boto3)
 - Dimensional Data Modelling
+
+### 3 - [STEDI Human Balance Analytics](projects/3%20-%20STEDI%20Human%20Balance%20Analytics/)
+The STEDI Team has been hard at work developing a hardware STEDI Step Trainer that:
+- trains the user to do a STEDI balance exercise;
+- and has sensors on the device that collect data to train a machine-learning algorithm to detect steps;
+- has a companion mobile app that collects customer data and interacts with the device sensors.
+
+As a data engineer on the STEDI Step Trainer team, you'll need to extract the data produced by the STEDI Step Trainer sensors and the mobile app, and curate them into a data lakehouse solution on AWS so that Data Scientists can train a machine learning model.
+
+Skills Tested:
+- AWS Glue
+- AWS Athena
+- Spark (pyspark)
+- Architecting a Data Lakehouse

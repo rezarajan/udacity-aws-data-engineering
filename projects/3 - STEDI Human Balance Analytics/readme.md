@@ -2,7 +2,7 @@
 
 # Procedure
 
-### 1. Upload Raw Data to S3
+## 1. Upload Raw Data to S3
 
 First, the raw data must be uploaded to S3, into landing zones. A script is created to do this automatically via the aws cli.
 
@@ -16,7 +16,7 @@ sh scripts/upload_data_to_s3.sh
 <details>
   <summary>Output</summary>
 
-    ```
+    
     Cloning into '/tmp/nd027-Data-Engineering-Data-Lakes-AWS-Exercises'...
     remote: Enumerating objects: 1828, done.
     remote: Counting objects: 100% (182/182), done.
@@ -38,10 +38,10 @@ sh scripts/upload_data_to_s3.sh
     upload: ../../../../tmp/nd027-Data-Engineering-Data-Lakes-AWS-Exercises/project/starter/step_trainer/landing/step_trainer-1691348232085.json to s3://aws-dend-project-3/step_trainer/landing/step_trainer-1691348232085.json
     upload: ../../../../tmp/nd027-Data-Engineering-Data-Lakes-AWS-Exercises/project/starter/step_trainer/landing/step_trainer-1691348232132.json to s3://aws-dend-project-3/step_trainer/landing/step_trainer-1691348232132.json
     Content uploaded to S3 bucket: aws-dend-project-3
-    ```
+    
 </details>
 
-### 2. Create a Database to Store Tables
+## 2. Create a Database to Store Tables
 Before creating tables which will allow us to interact with the data, a database must first be created. Using the aws cli tool, we create a database named `stedi-project-3`
 
 ```sh
@@ -50,3 +50,36 @@ aws glue create-database --database-input '{
         "Description": "STEDI Data for AWS DEND Project 3."
     }'
 ```
+
+Landing tables may now be created as follows:
+
+```sh
+# Create the customer_landing table
+aws athena start-query-execution \
+    --query-string file://scripts/athena/customer_landing.sql \
+    --query-execution-context Database="stedi-project-3" \
+    --result-configuration OutputLocation="s3://aws-dend-project-3/athena/"
+
+# Create the accelerometer_landing table
+aws athena start-query-execution \
+    --query-string file://scripts/athena/accelerometer_landing.sql \
+    --query-execution-context Database="stedi-project-3" \
+    --result-configuration OutputLocation="s3://aws-dend-project-3/athena/"
+```
+
+### Sample Queries
+
+<!-- ![customer_landing](images/customer_landing.png 'Customer Landing')
+![accelerometer_landing](images/accelerometer_landing.png 'Accelerometer Landing') -->
+
+<figure>
+  <img src="images/customer_landing.png" alt="Customer Landing">
+  <figcaption>Querying the Customer Landing Data</figcaption>
+</figure>
+
+<figure>
+  <img src="images/accelerometer_landing.png" alt="Accelerometer Landing">
+  <figcaption>Querying the Accelerometer Landing Data</figcaption>
+</figure>
+
+Of note is that the customer birthdays seems to be abnormal, with years like 1399. However, this error seems systematic, and as noted in a project post, this should not affect the results upstream.

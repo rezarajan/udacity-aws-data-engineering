@@ -83,7 +83,8 @@ Each section below contains the results of straight queries from each of the cre
   <figcaption>Querying the Customer Landing Data</figcaption>
 </figure>
 
-Of note is that the customer birthdays seems to be abnormal, with years like 1399. However, this error seems systematic, and as noted in a project post, this should not affect the results upstream.
+- Of note is that the customer birthdays seems to be abnormal, with years like 1399. However, this error seems systematic, and as noted in a project post, this should not affect the results upstream.
+- The `sharewithresearchasofdate` field provides a timestamp which may be used to filter for data points which are valid for use in analytics.
 </details>
 <details>
 <summary>Accelerometer Landing</summary>
@@ -91,11 +92,18 @@ Of note is that the customer birthdays seems to be abnormal, with years like 139
   <img src="images/accelerometer_landing.png" alt="Accelerometer Landing">
   <figcaption>Querying the Accelerometer Landing Data</figcaption>
 </figure>
+
+- The table shows the `user` field corresponding the the user's email, which should correspond to the `email` field of the `customer_landing` table.
+- The `timestamp` field provides the timestamp of the data capture, and the x, y and z fields provide the coordinates of the device.
 </details>
 <details>
 <summary>Step Trainer Landing</summary>
 <figure>
   <img src="images/step_trainer_landing.png" alt="Step Trainer Landing">
   <figcaption>Querying the Step Trainer Landing Data</figcaption>
+
+- The results show the data capture timestamp in the `sensorreadingtime` field, the serial number of the device, and the integer value of the distance.
+- The `sensorreadingtime` should correspond to the `timestamp` field of the `accelerometer_landing` table.
+-  The `serialnumber` field should correspond to the `serialnumber` of the `customer_landing` table.
 </figure>
 </details>

@@ -83,7 +83,7 @@ Each section below contains the results of straight queries from each of the cre
   <figcaption>Querying the Customer Landing Data</figcaption>
 </figure>
 
-- Of note is that the customer birthdays seems to be abnormal, with years like 1399. However, this error seems systematic, and as noted in a project post, this should not affect the results upstream.
+- Of note is that the customer birthdays seems to be abnormal, with years like 1399. However, this error seems systematic, and as noted in a [project post](https://knowledge.udacity.com/questions/999505), this should not affect the results upstream.
 - The `sharewithresearchasofdate` field provides a timestamp which may be used to filter for data points which are valid for use in analytics.
 </details>
 <details>

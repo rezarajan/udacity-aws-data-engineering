@@ -65,21 +65,36 @@ aws athena start-query-execution \
     --query-string file://scripts/athena/accelerometer_landing.sql \
     --query-execution-context Database="stedi-project-3" \
     --result-configuration OutputLocation="s3://aws-dend-project-3/athena/"
+
+# Create the step_trainer_landing table
+aws athena start-query-execution \
+    --query-string file://scripts/athena/step_trainer_landing.sql \
+    --query-execution-context Database="stedi-project-3" \
+    --result-configuration OutputLocation="s3://aws-dend-project-3/athena/"
 ```
 
 ### Sample Queries
+Each section below contains the results of straight queries from each of the created tables.
 
-<!-- ![customer_landing](images/customer_landing.png 'Customer Landing')
-![accelerometer_landing](images/accelerometer_landing.png 'Accelerometer Landing') -->
-
+<details>
+<summary>Customer Landing</summary>
 <figure>
   <img src="images/customer_landing.png" alt="Customer Landing">
   <figcaption>Querying the Customer Landing Data</figcaption>
 </figure>
-
+Of note is that the customer birthdays seems to be abnormal, with years like 1399. However, this error seems systematic, and as noted in a project post, this should not affect the results upstream.
+</details>
+<details>
+<summary>Accelerometer Landing</summary>
 <figure>
   <img src="images/accelerometer_landing.png" alt="Accelerometer Landing">
   <figcaption>Querying the Accelerometer Landing Data</figcaption>
 </figure>
-
-Of note is that the customer birthdays seems to be abnormal, with years like 1399. However, this error seems systematic, and as noted in a project post, this should not affect the results upstream.
+</details>
+<details>
+<summary>Step Trainer Landing</summary>
+<figure>
+  <img src="images/step_trainer_landing.png" alt="Step Trainer Landing">
+  <figcaption>Querying the Step Trainer Landing Data</figcaption>
+</figure>
+</details>

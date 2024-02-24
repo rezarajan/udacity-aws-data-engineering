@@ -107,3 +107,13 @@ Each section below contains the results of straight queries from each of the cre
 -  The `serialnumber` field should correspond to the `serialnumber` of the `customer_landing` table.
 </figure>
 </details>
+
+## 3. AWS Glue
+
+### Pre-Requisites
+Before we can issue Glue jobs, we need to configure a policy to allow Glue access to our S3 bucket. A script has been provided to perform all the necessary configuration.
+
+```sh
+# Use the -f flag to overwite existing roles
+sh scripts/configure_glue.sh
+```

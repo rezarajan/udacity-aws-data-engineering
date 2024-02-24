@@ -82,6 +82,7 @@ Each section below contains the results of straight queries from each of the cre
   <img src="images/customer_landing.png" alt="Customer Landing">
   <figcaption>Querying the Customer Landing Data</figcaption>
 </figure>
+
 Of note is that the customer birthdays seems to be abnormal, with years like 1399. However, this error seems systematic, and as noted in a project post, this should not affect the results upstream.
 </details>
 <details>

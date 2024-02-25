@@ -83,6 +83,12 @@ Each section below contains the results of straight queries from each of the cre
   <figcaption>Querying the Customer Landing Data</figcaption>
 </figure>
 
+<figure>
+  <img src="images/customer_landing_count.png" alt="Customer Landing Count">
+  <figcaption>Querying the Customer Landing Data - Count</figcaption>
+</figure>
+
+- There are 956 entries in the customer_landing table.
 - Of note is that the customer birthdays seems to be abnormal, with years like 1399. However, this error seems systematic, and as noted in a [project post](https://knowledge.udacity.com/questions/999505), this should not affect the results upstream.
 - The `sharewithresearchasofdate` field provides a timestamp which may be used to filter for data points which are valid for use in analytics.
 </details>
@@ -92,7 +98,12 @@ Each section below contains the results of straight queries from each of the cre
   <img src="images/accelerometer_landing.png" alt="Accelerometer Landing">
   <figcaption>Querying the Accelerometer Landing Data</figcaption>
 </figure>
+<figure>
+  <img src="images/accelerometer_landing_count.png" alt="Accelerometer Landing Count">
+  <figcaption>Querying the Accelerometer Landing Data - Count</figcaption>
+</figure>
 
+- There are 81273 entries in the accelerometer_landing table.
 - The table shows the `user` field corresponding the the user's email, which should correspond to the `email` field of the `customer_landing` table.
 - The `timestamp` field provides the timestamp of the data capture, and the x, y and z fields provide the coordinates of the device.
 </details>
@@ -101,11 +112,16 @@ Each section below contains the results of straight queries from each of the cre
 <figure>
   <img src="images/step_trainer_landing.png" alt="Step Trainer Landing">
   <figcaption>Querying the Step Trainer Landing Data</figcaption>
+</figure>
+<figure>
+  <img src="images/step_trainer_landing_count.png" alt="Step Trainer Landing Count">
+  <figcaption>Querying the Step Trainer Landing Data - Count</figcaption>
+</figure>
 
+- There are 28680 entries in the step_trainer_landing table.
 - The results show the data capture timestamp in the `sensorreadingtime` field, the serial number of the device, and the integer value of the distance.
 - The `sensorreadingtime` should correspond to the `timestamp` field of the `accelerometer_landing` table.
 -  The `serialnumber` field should correspond to the `serialnumber` of the `customer_landing` table.
-</figure>
 </details>
 
 ## 3. AWS Glue
@@ -117,3 +133,4 @@ Before we can issue Glue jobs, we need to configure a policy to allow Glue acces
 # Use the -f flag to overwite existing roles
 sh scripts/configure_glue.sh
 ```
+

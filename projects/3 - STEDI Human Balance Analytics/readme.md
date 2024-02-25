@@ -178,3 +178,42 @@ where shareWithResearchAsOfDate != 0;
 - The python script for the Glue job is located here: [customer_landing_to_trusted.py](scripts/glue/customer_landing_to_trusted.py)
 
 </details>
+
+<details>
+<summary>Accelerometer Landing to Trusted</summary>
+
+<figure>
+  <img src="images/accelerometer_landing_to_trusted_job.png" alt="Accelerometer Landing to Trusted Glue Job">
+  <figcaption style="text-align:center;">Accelerometer Landing to Trusted Glue Job</figcaption>
+</figure>
+
+<figure>
+  <img src="images/accelerometer_trusted_sample_query.png" alt="Customer Trusted">
+  <figcaption style="text-align:center;">Querying the Accelerometer Trusted Data</figcaption>
+</figure>
+
+- The Glue job extracts data from the accelerometer landing and customer trusted data in S3, joins them using a sql query to omit customers who have opted out of sharing data, and loads the data as JSON into another target in S3.
+- An additional flag is specified to indicate whether the accelerometer timestamp falls before or after the customer has opted-in for data sharing; all data prior may be omitted by utilizing this flag.
+- The Glue job is configured to create a table in the data catalog, and update the schema on subsequent runs.
+- There are 40981 entries in the customer_trusted table, but only 32025 are valid when applying the exclusion flag to exclude data points prior to customer opt-in.
+
+<b>Joining Trusted Data</b>
+
+The glue job inner joins the accelerometer landing and customer trusted data, to filter for out PII. Furthermore, only accelerometer data is retined, and an additional PII exclusion flag for timestamp-based opt-in is added. The query utilized in the job is found below.
+```sql
+select 
+    a.*,
+    case when 
+        a.timestamp >= c.shareWithResearchAsOfDate then 0
+        else 1
+    end as piiexclude
+from customer_trusted c
+join accelerometer_landing a
+    on lower(a.user) = lower(c.email)
+;
+```
+
+<b>Resources</b>
+- The python script for the Glue job is located here: [accelerometer_landing_to_trusted.py](scripts/glue/accelerometer_landing_to_trusted.py)
+
+</details>

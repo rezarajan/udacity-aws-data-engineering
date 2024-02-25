@@ -78,56 +78,65 @@ Each section below contains the results of straight queries from each of the cre
 
 <details>
 <summary>Customer Landing</summary>
+
 <figure>
   <img src="images/customer_landing.png" alt="Customer Landing">
-  <figcaption>Querying the Customer Landing Data</figcaption>
+  <figcaption style="text-align:center;">Querying the Customer Landing Data</figcaption>
 </figure>
 
 <figure>
   <img src="images/customer_landing_count.png" alt="Customer Landing Count">
-  <figcaption>Querying the Customer Landing Data - Count</figcaption>
+  <figcaption style="text-align:center;">Querying the Customer Landing Data - Count</figcaption>
 </figure>
 
 - There are 956 entries in the customer_landing table.
 - Of note is that the customer birthdays seems to be abnormal, with years like 1399. However, this error seems systematic, and as noted in a [project post](https://knowledge.udacity.com/questions/999505), this should not affect the results upstream.
 - The `sharewithresearchasofdate` field provides a timestamp which may be used to filter for data points which are valid for use in analytics.
+
 </details>
 <details>
 <summary>Accelerometer Landing</summary>
+
 <figure>
   <img src="images/accelerometer_landing.png" alt="Accelerometer Landing">
-  <figcaption>Querying the Accelerometer Landing Data</figcaption>
+  <figcaption style="text-align:center;">Querying the Accelerometer Landing Data</figcaption>
 </figure>
+
 <figure>
   <img src="images/accelerometer_landing_count.png" alt="Accelerometer Landing Count">
-  <figcaption>Querying the Accelerometer Landing Data - Count</figcaption>
+  <figcaption style="text-align:center;">Querying the Accelerometer Landing Data - Count</figcaption>
 </figure>
 
 - There are 81273 entries in the accelerometer_landing table.
 - The table shows the `user` field corresponding the the user's email, which should correspond to the `email` field of the `customer_landing` table.
 - The `timestamp` field provides the timestamp of the data capture, and the x, y and z fields provide the coordinates of the device.
+
 </details>
+
 <details>
 <summary>Step Trainer Landing</summary>
+
 <figure>
   <img src="images/step_trainer_landing.png" alt="Step Trainer Landing">
-  <figcaption>Querying the Step Trainer Landing Data</figcaption>
+  <figcaption style="text-align:center;">Querying the Step Trainer Landing Data</figcaption>
 </figure>
+
 <figure>
   <img src="images/step_trainer_landing_count.png" alt="Step Trainer Landing Count">
-  <figcaption>Querying the Step Trainer Landing Data - Count</figcaption>
+  <figcaption style="text-align:center;">Querying the Step Trainer Landing Data - Count</figcaption>
 </figure>
 
 - There are 28680 entries in the step_trainer_landing table.
 - The results show the data capture timestamp in the `sensorreadingtime` field, the serial number of the device, and the integer value of the distance.
 - The `sensorreadingtime` should correspond to the `timestamp` field of the `accelerometer_landing` table.
 -  The `serialnumber` field should correspond to the `serialnumber` of the `customer_landing` table.
+
 </details>
 
 ## 3. AWS Glue
 
 ### Pre-Requisites
-Before we can issue Glue jobs, we need to configure a policy to allow Glue access to our S3 bucket. A script has been provided to perform all the necessary configuration.
+Before Glue jobs can be created, a policy must be configured to allow Glue access to the appropriate S3 bucket. A script has been provided to perform all the necessary configuration.
 
 ```sh
 # Use the -f flag to overwite existing roles
@@ -142,13 +151,15 @@ An overview is provided for each Glue job implemented; they are categorized as f
 #### Trusted Zone Jobs
 <details>
 <summary>Customer Landing to Trusted</summary>
+
 <figure>
   <img src="images/customer_landing_to_trusted_job.png" alt="Customer Landing to Trusted Glue Job">
-  <figcaption>Cutomer Landing to Trusted Glue Job</figcaption>
+  <figcaption style="text-align:center;">Cutomer Landing to Trusted Glue Job</figcaption>
 </figure>
+
 <figure>
   <img src="images/customer_trusted_sample_query.png" alt="Customer Trusted">
-  <figcaption>Querying the Customer Trusted Data</figcaption>
+  <figcaption style="text-align:center;">Querying the Customer Trusted Data</figcaption>
 </figure>
 
 - The Glue job extracts data from the customer landing data in S3, transforms it using a sql query to omit customers who have opted out of sharing data, and loads the data as JSON into another target in S3.
@@ -165,4 +176,5 @@ where shareWithResearchAsOfDate != 0;
 
 <b>Resources</b>
 - The python script for the Glue job is located here: [customer_landing_to_trusted.py](scripts/glue/customer_landing_to_trusted.py)
+
 </details>

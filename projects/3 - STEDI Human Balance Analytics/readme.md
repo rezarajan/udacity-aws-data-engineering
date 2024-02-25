@@ -134,3 +134,35 @@ Before we can issue Glue jobs, we need to configure a policy to allow Glue acces
 sh scripts/configure_glue.sh
 ```
 
+### Glue Jobs
+Glue job scripts can be found in the [scripts/glue folder](scripts/glue/).
+
+An overview is provided for each Glue job implemented; they are categorized as follows: jobs that ingest data to the **trusted zone**, and jobs that ingest data to the **curated zone**. Trusted zone jobs filter out landing zone data for PII (Personally Indentifiable Information). Curated zone jobs enrich, or compose data from the trusted zone and other data sources, to produce high-quality, privacy-filtered data suitable for the business requirements, such as analytics and machine learning.
+
+#### Trusted Zone Jobs
+<details>
+<summary>Customer Landing to Trusted</summary>
+<figure>
+  <img src="images/customer_landing_to_trusted_job.png" alt="Customer Landing to Trusted Glue Job">
+  <figcaption>Cutomer Landing to Trusted Glue Job</figcaption>
+</figure>
+<figure>
+  <img src="images/customer_trusted_sample_query.png" alt="Customer Trusted">
+  <figcaption>Querying the Customer Trusted Data</figcaption>
+</figure>
+
+- The Glue job extracts data from the customer landing data in S3, transforms it using a sql query to omit customers who have opted out of sharing data, and loads the data as JSON into another target in S3.
+- The Glue job is configured to create a table in the data catalog, and update the schema on subsequent runs.
+- There are 482 entries in the customer_trusted table, and no null entries for the `sharewithresearchasofdate` column.
+
+<b>Filtering PII</b>
+
+The glue job filters for PII in the SQL transform step by issuing the following query:
+```sql
+select * from customer_landing
+where shareWithResearchAsOfDate != 0;
+```
+
+<b>Resources</b>
+- The python script for the Glue job is located here: [customer_landing_to_trusted.py](scripts/glue/customer_landing_to_trusted.py)
+</details>

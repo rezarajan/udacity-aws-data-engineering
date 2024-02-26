@@ -1,5 +1,5 @@
 -- Returns the row count and null count of shared timestamps
--- Assert that row_count = 428, null_shared_count = 0
+-- Assert that row_count = 482, null_shared_count = 0
 SELECT
     COUNT(*) AS row_count,
     SUM(

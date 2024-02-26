@@ -76,6 +76,7 @@ aws athena start-query-execution \
 ### Sample Queries
 Each section below contains the results of straight queries from each of the created tables.
 
+#### Landing Zone Tables
 <details>
 <summary>Customer Landing</summary>
 
@@ -330,3 +331,16 @@ join accelerometer_trusted a
 - The python script for the Glue job is located here: [machine_learning_curated.py](scripts/glue/machine_learning_curated.py)
 
 </details>
+
+### 4. Validation
+The following validation tests have been perform, in accordance with the project rubric:
+| Zone    | Table                      | Required Row Count | Actual Row Count | Test Script                                                        |
+|---------|----------------------------|--------------------|------------------|--------------------------------------------------------------------|
+| Landing | `customer_landing`         | 956                | 956              | [customer_landing.sql](tests/customer_landing.sql)                 |
+| Landing | `accelerometer_landing`    | 81273              | 81273            | [accelerometer_landing.sql](tests/accelerometer_landing.sql)       |
+| Landing | `step_trainer_landing`     | 28680              | 28680            | [step_trainer_landing.sql](tests/step_trainer_landing.sql)         |
+| Trusted | `customer_trusted`         | 482                | 482              | [customer_trusted.sql](tests/customer_trusted.sql)                 |
+| Trusted | `accelerometer_trusted`    | 40981              | 40981            | [accelerometer_trusted.sql](tests/accelerometer_trusted.sql)       |
+| Trusted | `step_trainer_trusted`     | 14460              | 14460            | [step_trainer_trusted.sql](tests/step_trainer_trusted.sql)         |
+| Curated | `customer_curated`         | 482                | 482              | [customer_curated.sql](tests/customer_curated.sql)                 |
+| Curated | `machine_learning_curated` | 43681              | 43681            | [machine_learning_curated.sql](tests/machine_learning_curated.sql) |

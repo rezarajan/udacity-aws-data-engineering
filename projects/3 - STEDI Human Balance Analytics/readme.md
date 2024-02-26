@@ -291,3 +291,42 @@ join accelerometer_trusted a
 - The python script for the Glue job is located here: [customer_trusted_to_curated.py](scripts/glue/customer_trusted_to_curated.py)
 
 </details>
+
+<details>
+<summary>Machine Learning Curated</summary>
+
+<figure>
+  <img src="images/machine_learning_curated_job.png" alt="Machine Learning Curated Glue Job">
+  <figcaption style="text-align:center;">Machine Learning Curated Glue Job</figcaption>
+</figure>
+
+<figure>
+  <img src="images/machine_learning_curated_sample_query.png" alt="Machine Learning Curated Sample Query">
+  <figcaption style="text-align:center;">Querying the Machine Learning Curated Data</figcaption>
+</figure>
+
+- The Glue job joins the step_trainer_trusted data with the accelerometer_trusted data to produce a table consisting of sensor reading data points, timestamps, and miscellaneous data such as serial number and cusomter email, if required for other upstream analytics purposes.
+- The source data for this table comes from the trusted zone, and therefore only consists on data from cusomters who have opted-in for data sharing.
+- The Glue job is configured to create a table in the data catalog, and update the schema on subsequent runs.
+- There are 43681 entries in the machine_learning_curated table.
+
+<b>Join Query</b>
+
+The glue job inner joins the step trainer trusted and accelerometer trusted data. The query utilized in the job is found below.
+```sql
+select
+    s.serialNumber,
+    a.user,
+    s.sensorReadingTime,
+    s.distanceFromObject,
+    a.x, a.y, a.z
+from step_trainer_trusted s
+join accelerometer_trusted a
+    on a.timestamp = s.sensorReadingTime
+;
+```
+
+<b>Resources</b>
+- The python script for the Glue job is located here: [machine_learning_curated.py](scripts/glue/machine_learning_curated.py)
+
+</details>

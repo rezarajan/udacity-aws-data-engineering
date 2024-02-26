@@ -158,7 +158,7 @@ An overview is provided for each Glue job implemented; they are categorized as f
 </figure>
 
 <figure>
-  <img src="images/customer_trusted_sample_query.png" alt="Customer Trusted">
+  <img src="images/customer_trusted.png" alt="Customer Trusted Sample Query">
   <figcaption style="text-align:center;">Querying the Customer Trusted Data</figcaption>
 </figure>
 
@@ -188,7 +188,7 @@ where shareWithResearchAsOfDate != 0;
 </figure>
 
 <figure>
-  <img src="images/accelerometer_trusted_sample_query.png" alt="Accelerometer Trusted">
+  <img src="images/accelerometer_trusted_sample_query.png" alt="Accelerometer Trusted Sample Query">
   <figcaption style="text-align:center;">Querying the Accelerometer Trusted Data</figcaption>
 </figure>
 
@@ -227,7 +227,7 @@ join accelerometer_landing a
 </figure>
 
 <figure>
-  <img src="images/step_trainer_trusted_sample_query.png" alt="Step Trainer Trusted">
+  <img src="images/step_trainer_trusted_sample_query.png" alt="Step Trainer Trusted Sample Query">
   <figcaption style="text-align:center;">Querying the Step Trainer Trusted Data</figcaption>
 </figure>
 

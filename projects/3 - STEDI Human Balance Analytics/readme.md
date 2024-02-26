@@ -90,7 +90,13 @@ Each section below contains the results of straight queries from each of the cre
   <figcaption style="text-align:center;">Querying the Customer Landing Data - Count</figcaption>
 </figure>
 
+<figure>
+  <img src="images/customer_landing_blanks.png" alt="Customer Landing Blank Count">
+  <figcaption style="text-align:center;">Querying the Customer Landing Data for Null shareWithResearchAsOfDate Rows</figcaption>
+</figure>
+
 - There are 956 entries in the customer_landing table.
+- Noted are some entries with blank values for `shareWithResearchAsOfDate`.
 - Of note is that the customer birthdays seems to be abnormal, with years like 1399. However, this error seems systematic, and as noted in a [project post](https://knowledge.udacity.com/questions/999505), this should not affect the results upstream.
 - The `sharewithresearchasofdate` field provides a timestamp which may be used to filter for data points which are valid for use in analytics.
 
@@ -163,7 +169,13 @@ An overview is provided for each Glue job implemented; they are categorized as f
   <figcaption style="text-align:center;">Querying the Customer Trusted Data</figcaption>
 </figure>
 
+<figure>
+  <img src="images/customer_trusted_blanks.png" alt="Customer Trusted Blank Count">
+  <figcaption style="text-align:center;">Querying the Customer Trusted Data for Null shareWithResearchAsOfDate Rows</figcaption>
+</figure>
+
 - The Glue job extracts data from the customer landing data in S3, transforms it using a sql query to omit customers who have opted out of sharing data, and loads the data as JSON into another target in S3.
+- There are no rows in which `shareWithResearchAsOfDate` is null.
 - The Glue job is configured to create a table in the data catalog, and update the schema on subsequent runs.
 - There are 482 entries in the customer_trusted table, and no null entries for the `sharewithresearchasofdate` column.
 

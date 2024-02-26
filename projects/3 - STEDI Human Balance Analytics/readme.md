@@ -231,7 +231,7 @@ join accelerometer_landing a
   <figcaption style="text-align:center;">Querying the Step Trainer Trusted Data</figcaption>
 </figure>
 
-- The Glue job extracts data from the step trainer landing and customer trusted data in S3, joins them using a sql query to omit customers who have opted out of sharing data, and loads the data as JSON into another target in S3.
+- The Glue job extracts the step trainer landing and customer curated data in S3, joins them using a sql query to omit customers who have opted out of sharing data, and loads the data as JSON into another target in S3.
 - An additional flag is specified to indicate whether the step trainer timestamp falls before or after the customer has opted-in for data sharing; all data prior may be omitted by utilizing this flag.
 - The Glue job is configured to create a table in the data catalog, and update the schema on subsequent runs.
 - There are 14460 entries in the step_trainer_trusted table, but only 11297 are valid when applying the exclusion flag to exclude data points prior to customer opt-in.
@@ -247,7 +247,7 @@ select
         else 1
     end as piiexclude
 from step_trainer_landing s
-join customer_trusted c
+join customer_curated c
     on c.serialNumber = s.serialNumber
 ;
 ```

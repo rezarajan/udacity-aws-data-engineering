@@ -258,3 +258,36 @@ join customer_trusted c
 </details>
 
 #### Curated Zone Data
+<details>
+<summary>Customer Trusted to Curated</summary>
+
+<figure>
+  <img src="images/customer_trusted_to_curated_job.png" alt="Customer Trusted to Curated Glue Job">
+  <figcaption style="text-align:center;">Customer Trusted to Curated Glue Job</figcaption>
+</figure>
+
+<figure>
+  <img src="images/customer_curated_sample_query.png" alt="Customer Curated Sample Query">
+  <figcaption style="text-align:center;">Querying the Customer Curated Data</figcaption>
+</figure>
+
+- The Glue job joins the customer_trusted data with the accelerometer_trusted data to produce a table consisting of only customers who have opted-in for analytics, and who have accelerometer data collected.
+- A distinct condition is enforced across all columns of the customer_trusted data, to enforce uniqueness of values.
+- The Glue job is configured to create a table in the data catalog, and update the schema on subsequent runs.
+- There are 482 entries in the customer_curated table, which is the same as the customer_trusted table as expected.
+
+<b>Join Query</b>
+
+The glue job inner joins the customer trusted and accelerometer trusted data, and applies a distinct condition on the resulting rows of the customer data. The query utilized in the job is found below.
+```sql
+select distinct(c.*)
+from customer_trusted c
+join accelerometer_trusted a
+    on lower(a.user) = lower(c.email)
+;
+```
+
+<b>Resources</b>
+- The python script for the Glue job is located here: [customer_trusted_to_curated.py](scripts/glue/customer_trusted_to_curated.py)
+
+</details>

@@ -332,7 +332,7 @@ join accelerometer_trusted a
 
 </details>
 
-### 4. Validation
+## 4. Validation
 The following validation tests have been perform, in accordance with the project rubric:
 | Zone    | Table                      | Required Row Count | Actual Row Count | Test Script                                                        |
 |---------|----------------------------|--------------------|------------------|--------------------------------------------------------------------|

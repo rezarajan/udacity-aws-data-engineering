@@ -1,3 +1,4 @@
 *.cfg
 .vscode
 __pycache__/
+**/logs/

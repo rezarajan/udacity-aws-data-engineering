@@ -21,7 +21,7 @@ class StageToRedshiftOperator(BaseOperator):
                  aws_credentials_id='aws_credentials',
                  table='',
                  s3_bucket='',
-                 s3_key='',
+                 s3_key='{{ execution_date.strftime("%Y/%m") }}',
                  delimiter=',',
                  ignore_headers=1,
                  *args, **kwargs):

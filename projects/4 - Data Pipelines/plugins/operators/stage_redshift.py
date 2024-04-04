@@ -33,6 +33,7 @@ class StageToRedshiftOperator(BaseOperator):
         self.s3_bucket = s3_bucket
         self.s3_key = s3_key
         self.delimiter = delimiter
+        self.ignore_headers = ignore_headers
 
     def execute(self, context):
         # Fetch connections from the metastore backend
@@ -41,7 +42,7 @@ class StageToRedshiftOperator(BaseOperator):
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         
         # Truncate the staging table
-        self.log.info('Clearing data from the destination Redshift table')
+        self.log.info(f'Clearing data from the destination Redshift table {self.table}')
         redshift.run(f'TRUNCATE {self.table}')
 
         # Format sql strings
@@ -56,6 +57,6 @@ class StageToRedshiftOperator(BaseOperator):
         )
 
         # Copy the data to Redshift
-        self.log.info('Copying data from S3: {s3_path} to Redshift')
+        self.log.info(f'Copying data from S3: {s3_path} to Redshift')
         redshift.run(formatted_sql)
 

@@ -21,12 +21,26 @@ def final_project():
 
     start_operator = DummyOperator(task_id='Begin_execution')
 
+    #TODO: Include parameters here
     stage_events_to_redshift = StageToRedshiftOperator(
         task_id='Stage_events',
+        redshift_conn_id='redshift',
+        aws_credentials_id='aws_credentials',
+        table='staging_events',
+        s3_bucket='aws-dend-airflow/project-4',
+        s3_key='log-data',
+        delimiter=','
     )
 
+    #TODO: Include parameters here
     stage_songs_to_redshift = StageToRedshiftOperator(
         task_id='Stage_songs',
+        redshift_conn_id='redshift',
+        aws_credentials_id='aws_credentials',
+        table='staging_songs',
+        s3_bucket='aws-dend-airflow/project-4',
+        s3_key='song-data',
+        delimiter=','
     )
 
     load_songplays_table = LoadFactOperator(

@@ -12,39 +12,43 @@ default_args = {
     'start_date': pendulum.now(),
 }
 
+
 @dag(
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
-    schedule_interval='0 * * * *'
+    schedule_interval='0 * * * *',
+    max_active_runs=1
 )
 def final_project():
 
     start_operator = DummyOperator(task_id='Begin_execution')
 
-    #TODO: Include parameters here
+    # Stage the event log data to Redshift.
+    # YYYY/MM partitioning is enable via templating on the s3_key
     stage_events_to_redshift = StageToRedshiftOperator(
-        task_id='Stage_events',
+        task_id='stage_events',
         redshift_conn_id='redshift',
         aws_credentials_id='aws_credentials',
         table='staging_events',
         s3_bucket='aws-dend-airflow/project-4',
-        s3_key='log-data',
-        delimiter=','
+        s3_key='log-data/{{ execution_date.strftime("%Y/%m") }}',
+        json='log_json_path.json'
     )
 
-    #TODO: Include parameters here
     stage_songs_to_redshift = StageToRedshiftOperator(
-        task_id='Stage_songs',
+        task_id='stage_songs',
         redshift_conn_id='redshift',
         aws_credentials_id='aws_credentials',
         table='staging_songs',
         s3_bucket='aws-dend-airflow/project-4',
         s3_key='song-data',
-        delimiter=','
     )
 
     load_songplays_table = LoadFactOperator(
-        task_id='Load_songplays_fact_table',
+        task_id='load_songplays_fact_table',
+        redshift_conn_id='redshift',
+        table='songplays',
+        sql=SqlQueries.songplay_table_insert
     )
 
     load_user_dimension_table = LoadDimensionOperator(

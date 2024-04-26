@@ -25,3 +25,7 @@ sh scripts/upload_data_to_s3.sh
 `LoadFactOperator`: This operator only allows for append-style operations on tables.
 - Takes as input the target table and a sql query string.
 - Duplicate entries will be ignored, by default; this does not handle any upserts.
+
+`LoadDimensionOperator`: This operator handles dimension table operations. Notably, it differs from the fact table operators by allowing either truncate-insert (default) or append-style operations on the dimension table.
+- Takes as input the target table and a sql query string.
+- Switch between truncate-insert and append-style by setting the `truncate` flag to `True` or `False`, respectively.

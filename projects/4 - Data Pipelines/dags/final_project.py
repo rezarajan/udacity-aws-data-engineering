@@ -52,19 +52,31 @@ def final_project():
     )
 
     load_user_dimension_table = LoadDimensionOperator(
-        task_id='Load_user_dim_table',
+        task_id='load_user_dim_table',
+        redshift_conn_id='redshift',
+        table='users',
+        sql=SqlQueries.user_table_insert
     )
 
     load_song_dimension_table = LoadDimensionOperator(
-        task_id='Load_song_dim_table',
+        task_id='load_song_dim_table',
+        redshift_conn_id='redshift',
+        table='songs',
+        sql=SqlQueries.song_table_insert
     )
 
     load_artist_dimension_table = LoadDimensionOperator(
-        task_id='Load_artist_dim_table',
+        task_id='load_artist_dim_table',
+        redshift_conn_id='redshift',
+        table='artists',
+        sql=SqlQueries.artist_table_insert
     )
 
     load_time_dimension_table = LoadDimensionOperator(
-        task_id='Load_time_dim_table',
+        task_id='load_time_dim_table',
+        redshift_conn_id='redshift',
+        table='time',
+        sql=SqlQueries.time_table_insert
     )
 
     run_quality_checks = DataQualityOperator(

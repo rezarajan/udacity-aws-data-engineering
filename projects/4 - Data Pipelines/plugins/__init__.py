@@ -4,8 +4,11 @@ from airflow.plugins_manager import AirflowPlugin
 
 import operators
 import helpers
+import test_suite
 
 # Defining the plugin class
+
+
 class UdacityPlugin(AirflowPlugin):
     name = "udacity_plugin"
     operators = [
@@ -16,4 +19,7 @@ class UdacityPlugin(AirflowPlugin):
     ]
     helpers = [
         helpers.SqlQueries
+    ]
+    test_suite = [
+        test_suite.TestSuite
     ]

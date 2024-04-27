@@ -1,11 +1,12 @@
-from datetime import datetime, timedelta
 import pendulum
-import os
+
+from datetime import datetime, timedelta
 from airflow.decorators import dag
 from airflow.operators.dummy import DummyOperator
 from operators import (StageToRedshiftOperator, LoadFactOperator,
                        LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries
+from test_suite import TestSuite
 
 default_args = {
     'owner': 'udacity',
@@ -80,7 +81,10 @@ def final_project():
     )
 
     run_quality_checks = DataQualityOperator(
-        task_id='Run_data_quality_checks',
+        task_id='run_data_quality_checks',
+        redshift_conn_id='redshift_test',
+        sql=TestSuite.row_count_sql.format(table='songs'),
+        test_function=TestSuite.row_count_test
     )
 
 

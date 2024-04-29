@@ -11,12 +11,14 @@ class DataQualityOperator(BaseOperator):
     def __init__(self,
                  redshift_conn_id='redshift',
                  sql='',
+                 table='',
                  test_function=lambda x: True,
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id
         self.sql = sql
+        self.table = table
         self.test_function = test_function
 
     def execute(self, context):
@@ -24,7 +26,7 @@ class DataQualityOperator(BaseOperator):
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
         # Run test query
-        records = redshift.get_records(self.sql)
+        records = redshift.get_records(self.sql.format(table=self.table))
 
         # Run test function and raise error if failed
         result = False

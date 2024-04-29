@@ -21,7 +21,7 @@ default_args = {
 )
 def final_project():
 
-    start_operator = DummyOperator(task_id='Begin_execution')
+    start_operator = DummyOperator(task_id='begin_execution')
 
     # Stage the event log data to Redshift.
     # YYYY/MM partitioning is enable via templating on the s3_key
@@ -91,17 +91,19 @@ def final_project():
     @task_group
     def run_tests():
         """Run all data quality checks"""
-        run_quality_checks = DataQualityOperator(
-            task_id='run_data_quality_checks',
-            redshift_conn_id='redshift',
-            sql=TestSuite.row_count_sql.format(table='songs'),
-            test_function=TestSuite.row_count_test
-        )
-    end_operator = DummyOperator(task_id='End execution')
+        for table in ['songplays', 'users', 'songs', 'artists', 'time']:
+            DataQualityOperator(
+                task_id=f'run_data_quality_check_{table}',
+                redshift_conn_id='redshift',
+                sql=TestSuite.row_count_sql,
+                table=table,
+                test_function=TestSuite.row_count_test
+            )
+
+    end_operator = DummyOperator(task_id='end_execution')
 
     start_operator >> staging_group() >> load_facts(
     ) >> load_dimensions() >> run_tests() >> end_operator
 
 
 final_project_dag = final_project()
-

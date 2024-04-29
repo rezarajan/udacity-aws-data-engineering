@@ -8,15 +8,20 @@ from helpers import SqlQueries
 from test_suite import TestSuite
 
 default_args = {
-    'owner': 'udacity',
-    'start_date': pendulum.now(),
+    'owner': 'rezarajan',
+    'depends_on_past': True,
+    'start_date': pendulum.datetime(2018, 11, 1),
+    'end_date': pendulum.datetime(2018, 11, 1),
+    'retries': 1,
+    'retry_delay': pendulum.duration(minutes=5),
+    'catchup': False
 }
 
 
 @dag(
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
-    schedule_interval='0 * * * *',
+    schedule_interval='@hourly',
     max_active_runs=1
 )
 def final_project():

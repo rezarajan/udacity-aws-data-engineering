@@ -1,13 +1,14 @@
 class TestSuite:
     row_count_sql = """SELECT COUNT(*) FROM {table}"""
 
-    def row_count_test(records):
-        """Check for empty result sets on a table"""
-        if len(records) < 1 or len(records[0]) < 1:
-            return False
+    @classmethod
+    def row_count_test(cls, records):
+        """Check for a non-empty result set on a table.
+           Raises ValueError if check fails, otherwise returns True.
+        """
 
-        num_records = records[0][0]
-        if num_records < 1:
-            return False
+        if not isinstance(records, list) or not records or not isinstance(records[0], tuple):
+            raise ValueError("Invalid records format")
 
-        return True
+        num_records = records[0][0] if records[0] else 0
+        return num_records > 0

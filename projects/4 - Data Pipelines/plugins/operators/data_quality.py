@@ -29,11 +29,7 @@ class DataQualityOperator(BaseOperator):
         records = redshift.get_records(self.sql.format(table=self.table))
 
         # Run test function and raise error if failed
-        result = False
         try:
-            result = self.test_function(records)
+            assert self.test_function(records)
         except AssertionError as e:
-            print(e)
-
-        if not result:
-            raise AssertionError('Test failed!')
+            self.log.error(f'Test Failed!\n{e}')

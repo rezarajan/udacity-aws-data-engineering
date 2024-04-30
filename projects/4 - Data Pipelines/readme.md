@@ -14,6 +14,27 @@ sh scripts/upload_data_to_s3.sh
     - `PREFIX` changes the path within the bucket. A blank value will default to the root of the bucket.
   - For this project the bucket `aws-dend-airflow` is created and the project data files are copied over.
 
+## 2. Set up Redshift User
+For the purposes of this project, a new user is created with access to the `prod` database only. First, create and connect to the `prod` database, then execute the following queries in Redshift:
+
+```sql
+-- Create a user. Ensure to change the password
+CREATE USER prod_svc_user PASSWORD 'someP@ssw0rd';
+
+-- Grant all privileges to the user, in the context of the prod database.
+-- This is required for certain dag/task operations.
+GRANT ALL ON ALL TABLES IN SCHEMA public TO prod_svc_user;
+```
+## 3. Deploy Airflow
+A docker compose file is provided to quickly spin-up an Airflow instance. Enter the project's directory, and run `docker compose up -d`. Once deployed, the application can be accessed at `localhost:8080`.
+
+## 4. Add connections to Airflow
+Under 'Admin -> Connections' add the relevant entries for:
+ - AWS CLI access, and 
+ - Redshift access with the previously created user.
+
+*Note:* Connection testing is enabled in the docker compose file; be sure to test the connections before saving them.
+
 # Dev Notes
 ### Operators
 

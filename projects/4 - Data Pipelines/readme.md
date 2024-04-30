@@ -14,7 +14,7 @@ sh scripts/upload_data_to_s3.sh
     - `PREFIX` changes the path within the bucket. A blank value will default to the root of the bucket.
   - For this project the bucket `aws-dend-airflow` is created and the project data files are copied over.
 
-## 2. Set up Redshift User
+## 2. Set up Redshift user
 For the purposes of this project, a new user is created with access to the `prod` database only. First, create and connect to the `prod` database, then execute the following queries in Redshift:
 
 ```sql
@@ -25,10 +25,14 @@ CREATE USER prod_svc_user PASSWORD 'someP@ssw0rd';
 -- This is required for certain dag/task operations.
 GRANT ALL ON ALL TABLES IN SCHEMA public TO prod_svc_user;
 ```
-## 3. Deploy Airflow
+
+## 3. Create tables
+With the new user created, instantiate the necessary tables for the project by executing the [create_tables SQL script](./scripts/create_tables.sql).
+
+## 4. Deploy Airflow
 A docker compose file is provided to quickly spin-up an Airflow instance. Enter the project's directory, and run `docker compose up -d`. Once deployed, the application can be accessed at `localhost:8080`.
 
-## 4. Add connections to Airflow
+## 5. Add connections to Airflow
 Under 'Admin -> Connections' add the relevant entries for:
  - AWS CLI access, and 
  - Redshift access with the previously created user.
@@ -50,8 +54,15 @@ Under 'Admin -> Connections' add the relevant entries for:
     </figure>
 </details>
 
-## 5. Run the DAG
+## 6. Run the DAG
 The dag is named `final_project` and can be enabled from the DAGs menu. By default, the DAG is configured to run only for the date range of the data provided in the project, i.e. '2018/11'. It is configured to utilize the execution time and parse the year and month, however the default execution will only run for the aforementioned date.
+
+**DAG Defaults**:
+- Catchup is disabled
+- Email on retry is disabled
+- Retries set to 3
+- Retry delay set to 5 minutes
+- Depends on past set to False (allows parallel backfills)
 
 <details>
   <summary>DAG Execution</summary>
@@ -95,5 +106,5 @@ Test logic is separated from operator logic by utilizing test classes. These are
 
 `row_count_function`: The unit test function.
 - Takes as input the result set from the corresponding sql query. 
-- It must either raise and error or return `False` if the test fails, and `True` if the test passes.
+- It must either raise an error or return `False` if the test fails, and `True` if the test passes.
 - By default, the `DataQualityOperator` will return `True` for all tests, so make sure to be explicit here.

@@ -38,3 +38,17 @@ Skills Tested:
 - AWS Athena
 - Spark (pyspark)
 - Architecting a Data Lakehouse
+
+### 4 - [Data Pipelines](projects/4%20-%20Data%20Pipelines)
+A music streaming company, Sparkify, has decided that it is time to introduce more automation and monitoring to their data warehouse ETL pipelines and come to the conclusion that the best tool to achieve this is Apache Airflow.
+
+This project focuses on creating a high grade data pipeline that is:
+- built from reusable tasks
+- allows monitoring
+- enables backfills
+- performs data quality checks following ETL
+
+Skills Tested:
+- Apache Airflow
+- Amazon Redshift
+- ETL Pipelines

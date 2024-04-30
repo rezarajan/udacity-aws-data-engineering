@@ -52,3 +52,7 @@ Skills Tested:
 - Apache Airflow
 - Amazon Redshift
 - ETL Pipelines
+
+---
+## [Certificate of Completion](./docs/certificate.pdf)
+![Certificate of Completion](./docs/images/certificate.jpg)

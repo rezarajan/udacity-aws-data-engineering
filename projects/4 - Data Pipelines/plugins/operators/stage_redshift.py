@@ -22,7 +22,7 @@ class StageToRedshiftOperator(BaseOperator):
                  table='',
                  s3_bucket='',
                  s3_key='{{ execution_date.strftime("%Y/%m") }}',
-                 json='auto'
+                 json='auto',
                  *args, **kwargs):
 
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)

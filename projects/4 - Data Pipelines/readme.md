@@ -35,6 +35,9 @@ Under 'Admin -> Connections' add the relevant entries for:
 
 *Note:* Connection testing is enabled in the docker compose file; be sure to test the connections before saving them.
 
+## 5. Run the DAG
+The dag is named `final_project` and can be enabled from the DAGs menu. By default, the DAG is configured to run only for the date range of the data provided in the project, i.e. '2018/11'. It is configured to utilize the execution time and parse the year and month, however the default execution will only run for the aforementioned date.
+
 # Dev Notes
 ### Operators
 
@@ -50,3 +53,16 @@ Under 'Admin -> Connections' add the relevant entries for:
 `LoadDimensionOperator`: This operator handles dimension table operations. Notably, it differs from the fact table operators by allowing either truncate-insert (default) or append-style operations on the dimension table.
 - Takes as input the target table and a sql query string.
 - Switch between truncate-insert and append-style by setting the `truncate` flag to `True` or `False`, respectively.
+
+`DataQualityOperator`: This operator performs unit tests on the tables. For robustness, it takes in a SQL string to execute, the table, and a test function - this way the test logic is decoupled from the operator.
+- The test function should take as a parameter the result set of the sql query. See [tests](#tests) below to understand how tests can be created.
+- By default, if no test function is provided this operator will return `True` for the test function, so be sure to provide a test function. The [`TestSuite`](./plugins/test_suite/test_suite.py) class is a good place to start.
+- The sql string should utilize templates for the table name (e.g. `"SELECT * FROM {table}"`)
+- A target table must be provided.
+*Note:* This operator can be modified to provide updated to perform more robust templating. For now, it provides only basic templating functionality for the table name.
+
+### Tests
+Test logic is separated from operator logic by utilizing test classes. These are found under the [tests folder](./plugins/test_suite/). By default, a `TestSuite` class is provided with a simple row count test. It is fairly straightforward to extend this class with other tests, by following the query-test function pattern:
+
+`row_count_test.sql`: The templated sql string to be executed
+`row_count_function`: The unit test function. Takes as input the result set from the corresponding sql query. It must either raise and error or return `False` if the test fails, and `True` if the test passes. By default, the `DataQualityOperator` will return True for all tests, so make sure to be explicit here.

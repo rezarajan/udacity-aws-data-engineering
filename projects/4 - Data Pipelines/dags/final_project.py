@@ -9,11 +9,12 @@ from test_suite import TestSuite
 
 default_args = {
     'owner': 'rezarajan',
-    'depends_on_past': True,
+    'depends_on_past': False,
     'start_date': pendulum.datetime(2018, 11, 1),
     'end_date': pendulum.datetime(2018, 11, 1),
-    'retries': 1,
+    'retries': 3,
     'retry_delay': pendulum.duration(minutes=5),
+    'email_on_retry': False,
     'catchup': False
 }
 

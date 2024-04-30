@@ -33,17 +33,44 @@ Under 'Admin -> Connections' add the relevant entries for:
  - AWS CLI access, and 
  - Redshift access with the previously created user.
 
-*Note:* Connection testing is enabled in the docker compose file; be sure to test the connections before saving them.
+*Notes:* 
+- Connection testing is enabled in the docker compose file; be sure to test the connections before saving them.
+- Specify the region_name for the AWS CLI credentials
+- Specify the target database in the Redshift connection - DAG tasks will operate on this target. For each target database, create a new connection.
+
+<details>
+  <summary>Airflow Connections</summary>
+    <figure>
+      <img src="docs/images/aws-credentials.png" alt="AWS Connection">
+      <figcaption style="text-align:center;">AWS Connection in Airflow</figcaption>
+    </figure>
+    <figure>
+      <img src="docs/images/redshift-prod-credentials.png" alt="Redshift Connection">
+      <figcaption style="text-align:center;">Redshift Connection in Airflow</figcaption>
+    </figure>
+</details>
 
 ## 5. Run the DAG
 The dag is named `final_project` and can be enabled from the DAGs menu. By default, the DAG is configured to run only for the date range of the data provided in the project, i.e. '2018/11'. It is configured to utilize the execution time and parse the year and month, however the default execution will only run for the aforementioned date.
+
+<details>
+  <summary>DAG Execution</summary>
+    <figure>
+      <img src="docs/images/dag-overview.png" alt="DAG Execution Plan">
+      <figcaption style="text-align:center;">DAG Execution Plan</figcaption>
+    </figure>
+    <figure>
+      <img src="docs/images/dag-execution.png" alt="Successful DAG Execution">
+      <figcaption style="text-align:center;">Successful DAG Execution</figcaption>
+    </figure>
+</details>
 
 # Dev Notes
 ### Operators
 
 `StageToRedshiftOperator`: This operator stages data from S3 into a table in Redshift.
 - To avoid errors, ensure that the staging table exists in Redshift prior to running.
-- The default S3 key is compiled from the execution date in the format of YYYY/MM (e.g. s3://some_bucket/2018/11/). This isn't always useful as you'd likely want to specify an s3 key after the bucket; therefore you have the option to template this parameter as follows: `s3_key = some_key/{{ execution_date.strftime("%Y/%m") }}`, resuling in a path like s3://some_bucket/some_key/2018/11.
+- The default S3 key is compiled from the execution date in the format of YYYY/MM (e.g. s3://some_bucket/2018/11/). This isn't always useful as you'd likely want to specify an s3 key after the bucket name; therefore you have the option to template this parameter as follows: `s3_key = some_key/{{ execution_date.strftime("%Y/%m") }}`, resuling in a path like s3://some_bucket/some_key/2018/11.
 - redshift_conn_id and aws_credentials_id have defaults, but it is recommended that these be set anyway.
 
 `LoadFactOperator`: This operator only allows for append-style operations on tables.
@@ -59,10 +86,14 @@ The dag is named `final_project` and can be enabled from the DAGs menu. By defau
 - By default, if no test function is provided this operator will return `True` for the test function, so be sure to provide a test function. The [`TestSuite`](./plugins/test_suite/test_suite.py) class is a good place to start.
 - The sql string should utilize templates for the table name (e.g. `"SELECT * FROM {table}"`)
 - A target table must be provided.
-*Note:* This operator can be modified to provide updated to perform more robust templating. For now, it provides only basic templating functionality for the table name.
+- *Note:* This operator can be modified to perform more robust templating. For now, it provides only basic templating functionality for the table name.
 
 ### Tests
-Test logic is separated from operator logic by utilizing test classes. These are found under the [tests folder](./plugins/test_suite/). By default, a `TestSuite` class is provided with a simple row count test. It is fairly straightforward to extend this class with other tests, by following the query-test function pattern:
+Test logic is separated from operator logic by utilizing test classes. These are found under the [test_suite folder](./plugins/test_suite/). By default, a `TestSuite` class is provided with a simple row count test. It is fairly straightforward to extend this class with other tests, by following the query-test function pattern:
 
 `row_count_test.sql`: The templated sql string to be executed
-`row_count_function`: The unit test function. Takes as input the result set from the corresponding sql query. It must either raise and error or return `False` if the test fails, and `True` if the test passes. By default, the `DataQualityOperator` will return True for all tests, so make sure to be explicit here.
+
+`row_count_function`: The unit test function.
+- Takes as input the result set from the corresponding sql query. 
+- It must either raise and error or return `False` if the test fails, and `True` if the test passes.
+- By default, the `DataQualityOperator` will return `True` for all tests, so make sure to be explicit here.
